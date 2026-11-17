@@ -1,4 +1,4 @@
-.material-symbols-outlined {
+    .material-symbols-outlined {
       font-size: 18px;
       line-height: 1;
       display: inline-block;
@@ -544,3 +544,8 @@ body[data-page="home"] #routeNav {
     box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.35);
   }
 }
+
+/* การ์ดสมาชิก CBFM: พลิกหน้า-หลัง */
+#cbfmFlipper.is-flipped { transform: rotateY(180deg); }
+#cbfmFlipper .cbfm-face, #cbfmFlipper .cbfm-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+#cbfmFlipper .cbfm-back { transform: rotateY(180deg); }
