@@ -261,6 +261,7 @@ async function refreshPermission() {
 
 // แสดงข้อมูลผู้ใช้ที่หน้าแรก: ชื่อ อีเมล รูป และระดับสิทธิ์
 async function updateProfile() {
+  loadMemberCard();
   document.getElementById("profileCard").style.visibility = "visible";
   const nameEl = document.getElementById("profileName");
   const emailEl = document.getElementById("profileEmail");
@@ -1525,4 +1526,145 @@ async function runDebugChecks() {
 }
 if (new URLSearchParams(location.search).get("debug") === "1") {
   setTimeout(runDebugChecks, 3000);
+}
+
+/* ---------- การ์ดสมาชิก CBFM (แสดงและแก้ไขได้เฉพาะการ์ดของบัญชีที่ล็อกอิน) ---------- */
+var cbfmRow = null;
+function cbfm(id) {
+  return document.getElementById(id);
+}
+
+function cbfmDefault() {
+  const email = (fbUser.email || "").toLowerCase();
+  return {
+    email,
+    name: fbUser.displayName || fbUser.email || "",
+    handle: "",
+    role: "",
+    bio: "",
+    tags: [],
+    contact_email: fbUser.email || "",
+    discord: "",
+    instagram: "",
+    avatar_url: fbUser.photoURL || "",
+  };
+}
+
+function renderMemberCard(d) {
+  cbfm("cbfmName").textContent = d.name || "-";
+  cbfm("cbfmHandle").textContent = d.handle ? "@" + d.handle.replace(/^@/, "") : "";
+  cbfm("cbfmRole").textContent = d.role || "";
+  cbfm("cbfmBio").textContent = d.bio || "";
+  cbfm("cbfmContact").textContent = d.contact_email || "-";
+  cbfm("cbfmDiscord").textContent = d.discord || "-";
+  cbfm("cbfmInsta").textContent = d.instagram || "-";
+
+  const tagsEl = cbfm("cbfmTags");
+  tagsEl.replaceChildren();
+  (d.tags || []).forEach((tag) => {
+    const chip = document.createElement("span");
+    chip.className = "px-2 py-0.5 rounded-lg text-[11px] font-mono text-on-surface bg-surface-container border border-outline-variant";
+    chip.textContent = tag;
+    tagsEl.appendChild(chip);
+  });
+
+  const img = cbfm("cbfmAvatar");
+  const initial = cbfm("cbfmInitial");
+  if (d.avatar_url) {
+    img.src = d.avatar_url;
+    img.style.display = "block";
+    initial.style.display = "none";
+  } else {
+    img.style.display = "none";
+    initial.style.display = "flex";
+    initial.textContent = ((d.name || "?").trim().charAt(0) || "?").toUpperCase();
+  }
+}
+
+async function loadMemberCard() {
+  if (!cbfm("cbfmCard")) return;
+  if (!fbUser || !fbUser.email) {
+    cbfmRow = null;
+    cbfm("cbfmCard").classList.add("hidden");
+    cbfm("cbfmEditor").classList.add("hidden");
+    cbfm("cbfmLoginHint").classList.remove("hidden");
+    return;
+  }
+  cbfm("cbfmLoginHint").classList.add("hidden");
+  cbfm("cbfmCard").classList.remove("hidden");
+  let row = null;
+  try {
+    const { data } = await withTimeout(
+      sb.from("member_cards").select("*").eq("email", fbUser.email.toLowerCase()).maybeSingle()
+    );
+    row = data;
+  } catch (err) {
+    console.warn("โหลดการ์ดไม่สำเร็จ:", err);
+  }
+  cbfmRow = row || cbfmDefault();
+  renderMemberCard(cbfmRow);
+  cbfm("cbfmEditBtn").disabled = false;
+}
+
+function openCbfmEditor() {
+  const d = cbfmRow || cbfmDefault();
+  cbfm("cbfmInName").value = d.name || "";
+  cbfm("cbfmInHandle").value = d.handle || "";
+  cbfm("cbfmInRole").value = d.role || "";
+  cbfm("cbfmInBio").value = d.bio || "";
+  cbfm("cbfmInTags").value = (d.tags || []).join(", ");
+  cbfm("cbfmInContact").value = d.contact_email || "";
+  cbfm("cbfmInDiscord").value = d.discord || "";
+  cbfm("cbfmInInsta").value = d.instagram || "";
+  cbfm("cbfmMsg").textContent = "";
+  cbfm("cbfmEditor").classList.remove("hidden");
+}
+
+async function saveCbfmCard() {
+  if (!fbUser || !fbUser.email) return;
+  const name = cbfm("cbfmInName").value.trim();
+  if (!name) {
+    cbfm("cbfmMsg").textContent = "กรุณาใส่ชื่อที่แสดง";
+    return;
+  }
+  const tags = cbfm("cbfmInTags").value
+    .split(",")
+    .map((x) => x.trim())
+    .filter(Boolean)
+    .slice(0, 12);
+  const payload = {
+    email: fbUser.email.toLowerCase(),
+    name,
+    handle: cbfm("cbfmInHandle").value.trim(),
+    role: cbfm("cbfmInRole").value.trim(),
+    bio: cbfm("cbfmInBio").value.trim(),
+    tags,
+    contact_email: cbfm("cbfmInContact").value.trim(),
+    discord: cbfm("cbfmInDiscord").value.trim(),
+    instagram: cbfm("cbfmInInsta").value.trim(),
+    avatar_url: (cbfmRow && cbfmRow.avatar_url) || fbUser.photoURL || null,
+    updated_at: new Date().toISOString(),
+  };
+  cbfm("cbfmSaveBtn").disabled = true;
+  try {
+    const { error } = await withTimeout(sb.from("member_cards").upsert(payload, { onConflict: "email" }));
+    if (error) {
+      cbfm("cbfmMsg").textContent = "บันทึกไม่สำเร็จ: " + (error.message || "ไม่ทราบสาเหตุ");
+      return;
+    }
+    cbfmRow = payload;
+    renderMemberCard(cbfmRow);
+    cbfm("cbfmEditor").classList.add("hidden");
+  } catch (err) {
+    cbfm("cbfmMsg").textContent = "บันทึกไม่สำเร็จ กรุณาลองใหม่";
+  } finally {
+    cbfm("cbfmSaveBtn").disabled = false;
+  }
+}
+
+if (cbfm("cbfmCard")) {
+  cbfm("cbfmEditBtn").addEventListener("click", openCbfmEditor);
+  cbfm("cbfmCancelBtn").addEventListener("click", () => cbfm("cbfmEditor").classList.add("hidden"));
+  cbfm("cbfmSaveBtn").addEventListener("click", saveCbfmCard);
+  cbfm("cbfmFlipBtn").addEventListener("click", () => cbfm("cbfmFlipper").classList.toggle("is-flipped"));
 }
