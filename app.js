@@ -1551,11 +1551,8 @@ function cbfmDefault() {
 }
 
 function renderMemberCard(d) {
-  const frame = cbfm("cbfmFrame");
-  const send = () => frame && frame.contentWindow && frame.contentWindow.postMessage(
-    { type: "cbfm:data", data: d }, window.location.origin
-  );
-  send();
+  // การ์ดฝังอยู่ในหน้านี้โดยตรง จึงส่งข้อมูลถึงตัวเองผ่าน window
+  window.postMessage({ type: "cbfm:data", data: d }, window.location.origin);
 }
 
 // การ์ดส่งข้อความ 'cbfm:ready' เมื่อโหลดเสร็จ จึงส่งข้อมูลซ้ำอีกครั้งตอนนั้น
