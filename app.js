@@ -1569,7 +1569,7 @@ async function loadMemberCard() {
   if (!fbUser || !fbUser.email) {
     cbfmRow = null;
     cbfm("cbfmCard").classList.add("hidden");
-    cbfm("cbfmEditor").classList.add("hidden");
+    cbfm("cbfmModal").classList.add("hidden");
     cbfm("cbfmLoginHint").classList.remove("hidden");
     return;
   }
@@ -1600,7 +1600,7 @@ function openCbfmEditor() {
   cbfm("cbfmInDiscord").value = d.discord || "";
   cbfm("cbfmInInsta").value = d.instagram || "";
   cbfm("cbfmMsg").textContent = "";
-  cbfm("cbfmEditor").classList.remove("hidden");
+  cbfm("cbfmModal").classList.remove("hidden");
 }
 
 async function saveCbfmCard() {
@@ -1637,7 +1637,7 @@ async function saveCbfmCard() {
     }
     cbfmRow = payload;
     renderMemberCard(cbfmRow);
-    cbfm("cbfmEditor").classList.add("hidden");
+    cbfm("cbfmModal").classList.add("hidden");
   } catch (err) {
     cbfm("cbfmMsg").textContent = "บันทึกไม่สำเร็จ กรุณาลองใหม่";
   } finally {
@@ -1647,6 +1647,6 @@ async function saveCbfmCard() {
 
 if (cbfm("cbfmCard")) {
   cbfm("cbfmEditBtn").addEventListener("click", openCbfmEditor);
-  cbfm("cbfmCancelBtn").addEventListener("click", () => cbfm("cbfmEditor").classList.add("hidden"));
+  cbfm("cbfmCancelBtn").addEventListener("click", () => cbfm("cbfmModal").classList.add("hidden"));
   cbfm("cbfmSaveBtn").addEventListener("click", saveCbfmCard);
 }
