@@ -533,6 +533,9 @@
         width: 312px;
       }
     }
+      /* ไม่แสดงพื้นหลังในหน้าฝัง: เหลือเฉพาะการ์ดและสายคล้อง */
+    html, body { background: transparent !important; }
+    .ambient-bg, .dot-layer { display: none !important; }
   </style>
 </head>
 <body>
