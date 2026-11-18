@@ -1551,35 +1551,18 @@ function cbfmDefault() {
 }
 
 function renderMemberCard(d) {
-  cbfm("cbfmName").textContent = d.name || "-";
-  cbfm("cbfmHandle").textContent = d.handle ? "@" + d.handle.replace(/^@/, "") : "";
-  cbfm("cbfmRole").textContent = d.role || "";
-  cbfm("cbfmBio").textContent = d.bio || "";
-  cbfm("cbfmContact").textContent = d.contact_email || "-";
-  cbfm("cbfmDiscord").textContent = d.discord || "-";
-  cbfm("cbfmInsta").textContent = d.instagram || "-";
-
-  const tagsEl = cbfm("cbfmTags");
-  tagsEl.replaceChildren();
-  (d.tags || []).forEach((tag) => {
-    const chip = document.createElement("span");
-    chip.className = "px-2 py-0.5 rounded-lg text-[11px] font-mono text-on-surface bg-surface-container border border-outline-variant";
-    chip.textContent = tag;
-    tagsEl.appendChild(chip);
-  });
-
-  const img = cbfm("cbfmAvatar");
-  const initial = cbfm("cbfmInitial");
-  if (d.avatar_url) {
-    img.src = d.avatar_url;
-    img.style.display = "block";
-    initial.style.display = "none";
-  } else {
-    img.style.display = "none";
-    initial.style.display = "flex";
-    initial.textContent = ((d.name || "?").trim().charAt(0) || "?").toUpperCase();
-  }
+  const frame = cbfm("cbfmFrame");
+  const send = () => frame && frame.contentWindow && frame.contentWindow.postMessage(
+    { type: "cbfm:data", data: d }, window.location.origin
+  );
+  send();
 }
+
+// การ์ดส่งข้อความ 'cbfm:ready' เมื่อโหลดเสร็จ จึงส่งข้อมูลซ้ำอีกครั้งตอนนั้น
+window.addEventListener("message", (ev) => {
+  if (ev.origin !== window.location.origin || !ev.data || ev.data.type !== "cbfm:ready") return;
+  if (cbfmRow) renderMemberCard(cbfmRow);
+});
 
 async function loadMemberCard() {
   if (!cbfm("cbfmCard")) return;
@@ -1666,5 +1649,4 @@ if (cbfm("cbfmCard")) {
   cbfm("cbfmEditBtn").addEventListener("click", openCbfmEditor);
   cbfm("cbfmCancelBtn").addEventListener("click", () => cbfm("cbfmEditor").classList.add("hidden"));
   cbfm("cbfmSaveBtn").addEventListener("click", saveCbfmCard);
-  cbfm("cbfmFlipBtn").addEventListener("click", () => cbfm("cbfmFlipper").classList.toggle("is-flipped"));
 }
