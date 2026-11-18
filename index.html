@@ -865,8 +865,9 @@ const __rootRect = () => __root.getBoundingClientRect();
       let __cardReady = false;
       const __updateAll = () => {
         updateMetrics();
-        if (!__cardReady && viewportW > 0) {
-          __cardReady = true;
+        // เมื่อขนาดพื้นที่เปลี่ยน (เช่น หน้าเพิ่งเปิดหรือย่อขยายหน้าจอ) ให้วางการ์ดที่จุดกลางใหม่ทันที
+        if (viewportW > 0 && !isDragging) {
+          if (!__cardReady) __cardReady = true;
           pos.x = target.x;
           pos.y = target.y;
           vel.x = 0;
