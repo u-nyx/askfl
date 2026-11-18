@@ -180,7 +180,8 @@
 <div class="mt-2 flex justify-center">
 <button id="cbfmEditBtn" type="button" disabled class="h-9 px-4 rounded-lg bg-primary-container text-on-primary-container text-xs font-semibold disabled:opacity-50">แก้ไขการ์ดของฉัน</button>
 </div>
-<form id="cbfmEditor" class="hidden mt-4 w-full rounded-2xl bg-surface-container-low border border-outline-variant p-4 space-y-3 text-left" onsubmit="return false">
+<div id="cbfmModal" class="hidden fixed inset-0 z-[95] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+<form id="cbfmEditor" class="w-full max-w-md max-h-[88vh] overflow-y-auto rounded-2xl bg-surface-container-low border border-outline-variant p-5 space-y-3 text-left shadow-2xl" onsubmit="return false">
 <div class="grid grid-cols-2 gap-2">
 <label class="col-span-2 text-xs text-on-surface-variant">ชื่อที่แสดง<input id="cbfmInName" maxlength="60" class="mt-1 w-full h-9 px-2.5 rounded-lg bg-surface border border-outline-variant text-sm text-on-surface"/></label>
 <label class="text-xs text-on-surface-variant">Handle<input id="cbfmInHandle" maxlength="40" class="mt-1 w-full h-9 px-2.5 rounded-lg bg-surface border border-outline-variant text-sm text-on-surface"/></label>
@@ -197,6 +198,7 @@
 <button id="cbfmSaveBtn" type="button" class="h-9 px-4 rounded-lg bg-primary-container text-on-primary-container text-xs font-semibold">บันทึก</button>
 </div>
 </form>
+</div>
 </div>
 </div></div>
 </section>
