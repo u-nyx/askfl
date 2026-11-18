@@ -175,43 +175,10 @@
 <!-- CBFM Member Card (ข้อมูลของบัญชีที่ล็อกอิน) -->
 <div class="flex flex-col items-center w-full">
 <div id="cbfmLoginHint" class="hidden text-sm text-on-surface-variant">เข้าสู่ระบบเพื่อดูและแก้ไขการ์ดของคุณ</div>
-<div id="cbfmCard" class="hidden w-full max-w-[340px]">
-<div id="cbfmFlipper" class="relative w-full h-[480px] transition-transform duration-500 [transform-style:preserve-3d]">
-<article class="cbfm-face absolute inset-0 rounded-[22px] p-5 flex flex-col bg-surface-container-low border border-outline-variant shadow-xl overflow-hidden">
-<div class="flex items-center justify-between font-mono text-[10px] tracking-wider text-on-surface-variant mb-4">
-<span>CBFM // MEMBER-CARD</span>
-<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">ACTIVE</span>
-</div>
-<div class="flex items-center gap-4 mb-3">
-<div class="w-[68px] h-[68px] rounded-2xl p-[2px] bg-gradient-to-br from-primary to-tertiary shrink-0">
-<img id="cbfmAvatar" alt="" class="w-full h-full rounded-[14px] object-cover bg-surface-container-high" style="display:none"/>
-<div id="cbfmInitial" class="w-full h-full rounded-[14px] flex items-center justify-center text-2xl font-semibold text-on-surface bg-surface-container-high">?</div>
-</div>
-<div class="min-w-0">
-<h2 id="cbfmName" class="text-lg font-bold text-on-surface truncate">-</h2>
-<div id="cbfmHandle" class="font-mono text-xs text-primary truncate"></div>
-<div id="cbfmRole" class="text-xs text-on-surface-variant truncate"></div>
-</div>
-</div>
-<p id="cbfmBio" class="text-[13px] leading-relaxed text-on-surface-variant mb-3 min-h-[3rem]"></p>
-<div id="cbfmTags" class="flex flex-wrap gap-1.5 mb-4"></div>
-<div class="flex flex-col gap-2 mb-4 text-[13px]">
-<div class="flex items-center justify-between px-3 py-2 rounded-xl bg-surface-container border border-outline-variant"><span class="text-on-surface-variant">Email</span><span id="cbfmContact" class="font-mono text-xs text-on-surface truncate ml-2"></span></div>
-<div class="flex items-center justify-between px-3 py-2 rounded-xl bg-surface-container border border-outline-variant"><span class="text-on-surface-variant">Discord</span><span id="cbfmDiscord" class="font-mono text-xs text-on-surface truncate ml-2"></span></div>
-<div class="flex items-center justify-between px-3 py-2 rounded-xl bg-surface-container border border-outline-variant"><span class="text-on-surface-variant">Instagram</span><span id="cbfmInsta" class="font-mono text-xs text-on-surface truncate ml-2"></span></div>
-</div>
-<div class="mt-auto pt-3 border-t border-dashed border-outline-variant flex items-center justify-between gap-2">
-<button id="cbfmEditBtn" type="button" disabled class="h-8 px-3 rounded-lg bg-primary-container text-on-primary-container text-xs font-semibold disabled:opacity-50">แก้ไขการ์ด</button>
-<button id="cbfmFlipBtn" type="button" class="h-8 px-3 rounded-lg border border-outline-variant text-xs text-on-surface hover:bg-surface-container">พลิกการ์ด</button>
-</div>
-</article>
-<article class="cbfm-back absolute inset-0 rounded-[22px] p-5 flex flex-col items-center justify-center text-center bg-surface-container-low border border-outline-variant shadow-xl overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden]">
-<div class="w-36 h-36 rounded-2xl border border-outline-variant bg-surface-container flex items-center justify-center text-on-surface mb-5">
-<span class="material-symbols-outlined !text-[72px]">qr_code_2</span>
-</div>
-<h3 class="text-base font-bold text-on-surface mb-1">CBFM Member</h3>
-<p class="text-xs text-on-surface-variant max-w-[240px]">การ์ดนี้แสดงข้อมูลของบัญชีที่เข้าสู่ระบบ แก้ไขได้เฉพาะการ์ดของตัวเองเท่านั้น</p>
-</article>
+<div id="cbfmCard" class="hidden w-full max-w-[420px]">
+<iframe id="cbfmFrame" src="cbfm-card.html" title="CBFM Member Card" allow="clipboard-write" class="w-full h-[640px] border-0 bg-transparent"></iframe>
+<div class="mt-2 flex justify-center">
+<button id="cbfmEditBtn" type="button" disabled class="h-9 px-4 rounded-lg bg-primary-container text-on-primary-container text-xs font-semibold disabled:opacity-50">แก้ไขการ์ดของฉัน</button>
 </div>
 <form id="cbfmEditor" class="hidden mt-4 w-full rounded-2xl bg-surface-container-low border border-outline-variant p-4 space-y-3 text-left" onsubmit="return false">
 <div class="grid grid-cols-2 gap-2">
