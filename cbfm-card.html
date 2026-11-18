@@ -997,9 +997,9 @@
         span.textContent = t;
         tags.appendChild(span);
       });
-      q('#display-email').textContent = d.contact_email || '-';
-      q('#display-discord').textContent = d.discord || '-';
-      q('#display-instagram').textContent = d.instagram || '-';
+      q('#display-email').textContent = d.contact_email || 'ยังไม่ระบุ';
+      q('#display-discord').textContent = d.discord || 'ยังไม่ระบุ';
+      q('#display-instagram').textContent = d.instagram || 'ยังไม่ระบุ';
       if (d.avatar_url) q('.avatar-img').src = d.avatar_url;
     });
     window.parent && window.parent.postMessage({ type: 'cbfm:ready' }, window.location.origin);
