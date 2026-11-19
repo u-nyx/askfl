@@ -1,23 +1,24 @@
 import { SUPABASE_URL, SUPABASE_KEY, FIREBASE_CONFIG } from "./config.js";
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut as fbSignOut }
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 /* ===== ตั้งค่า ===== */
 
 // ตั้งค่า Firebase (คัดลอกจาก Firebase Console → Project settings → Your apps)
-const firebaseConfig = {
-    apiKey: "AIzaSyCLhvHij49dsfmmdKFOB4tYMxC1F4r7oxs",
-    authDomain: "fen-board.firebaseapp.com",
-    databaseURL: "https://fen-board-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "fen-board",
-    storageBucket: "fen-board.firebasestorage.app",
-    messagingSenderId: "1002777913125",
-    appId: "1:1002777913125:web:9e32ce19faa76e3bf21ccc",
-    measurementId: "G-EMY1BC93LD"
-  };
 /* ================== */
+
+export const SUPABASE_URL = "https://qxatfxjaemqumxhgqlgu.supabase.co";
+export const SUPABASE_KEY = "sb_publishable_kFK1TySyqbOldG1X2FcijA_aFi9Udpk";
+
+export const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCLhvHij49dsfmmdKFOB4tYMxC1F4r7oxs",
+  authDomain: "fen-board.firebaseapp.com",
+  projectId: "fen-board",
+  appId: "1:1002777913125:web:9e32ce19faa76e3bf21ccc",
+};
+
 
 const BUCKET = "project-files";
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
@@ -38,7 +39,7 @@ const COL_KEYS = { 2: "category", 3: "size", 4: "date" };
 const FIREBASE_READY = !Object.values(FIREBASE_CONFIG).some((v) => String(v).startsWith("ใส่"));
 let fbAuth = null;
 try {
-  if (FIREBASE_READY) fbAuth = getAuth(initializeApp(FIREBASE_CONFIG));
+  if (FIREBASE_READY) fbAuth = getAuth(getApps().length ? getApp() : initializeApp(FIREBASE_CONFIG));
 } catch (err) {
   console.error("Firebase init failed:", err);
 }
@@ -226,6 +227,7 @@ const loginScreen = document.getElementById("loginScreen");
 const logoutBtn = document.getElementById("logoutBtn");
 const viewHome = document.getElementById("viewHome");
 const viewWorkspace = document.getElementById("viewWorkspace");
+const viewCard = document.getElementById("viewCard");
 const sidebarEl = document.getElementById("sidebar");
 const headerNav = document.getElementById("headerNav");
 
@@ -418,6 +420,7 @@ function setPage(name) {
   document.body.dataset.page = name;
   viewHome.classList.toggle("hidden", name !== "home");
   viewWorkspace.classList.toggle("hidden", name !== "workspace");
+  viewCard.classList.toggle("hidden", name !== "card");
   headerNav.classList.toggle("hidden", name !== "workspace");
   document.getElementById("headerUpload").style.display = name === "workspace" ? "" : "none";
   // เมนูข้างและปุ่มเมนูมือถือแสดงเฉพาะในหน้า room-work
@@ -437,6 +440,10 @@ function setPage(name) {
 async function routeFromHash() {
   if (!authReady) return;
   const h = location.hash;
+  if (h === "#card" || h.startsWith("#card?")) {
+    setPage("card");
+    return;
+  }
   if (h === "#room-work") {
     if (fbUser && canDelete) {
       hideLogin();
