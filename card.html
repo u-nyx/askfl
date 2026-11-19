@@ -541,7 +541,7 @@
     .cbfm-btn.primary { background: #3b62d8; border-color: #3b62d8; color: #fff; }
     .cbfm-btn:disabled { opacity: 0.5; cursor: default; }
     .cbfm-hidden { display: none !important; }
-    .cbfm-notice { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; color: var(--text-secondary); font-size: 15px; background: var(--bg-color); user-select: text; }
+    .cbfm-notice { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 70; max-width: 90vw; padding: 10px 18px; border-radius: 999px; background: rgba(15, 17, 23, 0.85); border: 1px solid var(--card-border); color: var(--text-secondary); font-size: 13px; text-align: center; pointer-events: none; user-select: text; }
     .cbfm-modal { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, 0.6); touch-action: auto; user-select: text; }
     .cbfm-form { width: 100%; max-width: 460px; max-height: 88vh; overflow-y: auto; background: rgba(18, 22, 32, 0.98); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
     .cbfm-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-secondary); }
@@ -653,4 +653,591 @@
             <button class="bio-link" type="button" id="copy-instagram-btn">
               <span class="link-left">
                 <span class="link-icon">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                </span>
+                <span>Instagram</span>
+              </span>
+              <span class="link-sub" id="display-instagram">@xpuise</span>
+            </button>
+          </div>
+
+          <div class="card-footer">
+            <div class="barcode" aria-hidden="true">
+              <span style="width:2px"></span><span style="width:1px"></span><span style="width:3px"></span>
+              <span style="width:1px"></span><span style="width:2px"></span><span style="width:4px"></span>
+              <span style="width:1px"></span><span style="width:2px"></span><span style="width:1px"></span>
+              <span style="width:3px"></span><span style="width:2px"></span><span style="width:1px"></span>
+              <span style="width:3px"></span><span style="width:1px"></span><span style="width:2px"></span>
+            </div>
+            <span class="serial-code">NO. 2026-0001</span>
+          </div>
+        </article>
+
+        <!-- BACK SIDE -->
+        <article class="id-card card-back">
+          <div class="card-slot-cutout"></div>
+
+          <div class="card-meta">
+            <span>BACK // SECURE-PASS</span>
+            <span class="status-badge">
+              <span class="status-dot"></span>
+              <span>VERIFIED</span>
+            </span>
+          </div>
+
+          <div class="back-content">
+            <div class="qr-placeholder">
+              <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect width="7" height="7" x="3" y="3" rx="1"/>
+                <rect width="7" height="7" x="14" y="3" rx="1"/>
+                <rect width="7" height="7" x="3" y="14" rx="1"/>
+                <path d="M14 14h3v3h-3zM17 17h4v4h-4zM14 21h3"/>
+              </svg>
+            </div>
+            <h2 class="back-title">Scan for Quick Link</h2>
+            <p class="back-desc">กดสองครั้งหรือแตะที่การ์ดเพื่อพลิกกลับด้านหน้า หรือสแกนเพื่อเข้าสู่ลิงก์โปรไฟล์หลัก</p>
+          </div>
+
+          <div class="card-footer">
+            <span class="serial-code">CBFM-SYSTEMS</span>
+            <span class="serial-code">REV. 2.0</span>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">คัดลอกเรียบร้อยแล้ว!</div>
+
+  <script>
+    (() => {
+      const cardWrapper = document.getElementById('card-wrapper');
+      const cardFlipper = document.getElementById('card-flipper');
+      const holoFoil = document.getElementById('holo-foil');
+      const specularGlare = document.getElementById('specular-glare');
+
+      const strapFrontOuter = document.getElementById('strap-front-outer');
+      const strapFrontBase = document.getElementById('strap-front-base');
+      const strapBackOuter = document.getElementById('strap-back-outer');
+      const strapBackBase = document.getElementById('strap-back-base');
+
+      let viewportW = window.innerWidth;
+      let viewportH = window.innerHeight;
+      let cardW = cardWrapper.offsetWidth || 340;
+      let cardH = cardFlipper.offsetHeight || 480;
+
+      const getRestTop = () => Math.max(150, Math.min(220, viewportH * 0.25));
+
+      let pos = { x: viewportW / 2, y: getRestTop() };
+      let vel = { x: 0, y: 0 };
+      let target = { x: viewportW / 2, y: getRestTop() };
+
+      let rot = { x: 0, y: 0, z: 0 };
+      let rotVel = { x: 0, y: 0, z: 0 };
+
+      let isDragging = false;
+      let dragOffset = { x: 0, y: 0 };
+      let lastPointer = { x: 0, y: 0 };
+      let hasDragged = false;
+      let isFlipped = false;
+
+      let lastTapTime = 0;
+      const DOUBLE_TAP_MS = 350;
+
+      const FIXED_DT = 1 / 120;
+      const stiffness = 135;
+      const damping = 11.5;
+      let accumulator = 0;
+      let lastTime = performance.now();
+      let swayTime = 0;
+
+      const updateMetrics = () => {
+        viewportW = window.innerWidth;
+        viewportH = window.innerHeight;
+        cardW = cardWrapper.offsetWidth || 340;
+        cardH = cardFlipper.offsetHeight || 480;
+        if (!isDragging) {
+          target.x = viewportW / 2;
+          target.y = getRestTop();
+        }
+      };
+      window.addEventListener('resize', updateMetrics, { passive: true });
+
+      function toggleFlip() {
+        isFlipped = !isFlipped;
+        cardFlipper.classList.toggle('flipped', isFlipped);
+      }
+
+      const onPointerDown = (e) => {
+        if (e.target.closest('button') || e.target.closest('a')) return;
+
+        isDragging = true;
+        hasDragged = false;
+
+        cardWrapper.setPointerCapture?.(e.pointerId);
+        dragOffset.x = e.clientX - pos.x;
+        dragOffset.y = e.clientY - pos.y;
+        lastPointer.x = e.clientX;
+        lastPointer.y = e.clientY;
+        cardWrapper.style.cursor = 'grabbing';
+      };
+
+      const onPointerMove = (e) => {
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+
+        if (isDragging) {
+          if (Math.hypot(clientX - lastPointer.x, clientY - lastPointer.y) > 6) {
+            hasDragged = true;
+          }
+          const nextX = clientX - dragOffset.x;
+          const nextY = clientY - dragOffset.y;
+
+          vel.x = (nextX - pos.x) * 28;
+          vel.y = (nextY - pos.y) * 28;
+
+          pos.x = nextX;
+          pos.y = nextY;
+          lastPointer.x = clientX;
+          lastPointer.y = clientY;
+        } else {
+          const cy = pos.y + cardH * 0.5;
+          const dx = (clientX - pos.x) / (cardW * 0.5);
+          const dy = (clientY - cy) / (cardH * 0.5);
+
+          if (Math.abs(dx) < 1.5 && Math.abs(dy) < 1.5) {
+            rotVel.y += (dx * 11 - rot.y) * 0.25;
+            rotVel.x += (-dy * 9 - rot.x) * 0.25;
+          }
+        }
+      };
+
+      const onPointerUp = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        cardWrapper.releasePointerCapture?.(e.pointerId);
+        cardWrapper.style.cursor = 'grab';
+        target.x = viewportW / 2;
+        target.y = getRestTop();
+
+        // แตะโดยไม่ได้ลาก: แตะสองครั้งภายในเวลาที่กำหนดจึงพลิก
+        if (!hasDragged) {
+          const now = performance.now();
+          if (now - lastTapTime < DOUBLE_TAP_MS) {
+            toggleFlip();
+            lastTapTime = 0;
+          } else {
+            lastTapTime = now;
+          }
+        }
+      };
+
+      cardWrapper.addEventListener('pointerdown', onPointerDown);
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      window.addEventListener('pointerup', onPointerUp, { passive: true });
+      window.addEventListener('pointercancel', onPointerUp, { passive: true });
+
+      let lastFrontPath = '';
+      let lastBackPath = '';
+
+      function stepPhysics(dt) {
+        swayTime += dt * 1.6;
+
+        if (!isDragging) {
+          const idleSwayX = Math.sin(swayTime) * 3.2;
+          const idleSwayY = Math.cos(swayTime * 0.8) * 1.6;
+
+          const ax = (target.x + idleSwayX - pos.x) * stiffness - vel.x * damping;
+          const ay = (target.y + idleSwayY - pos.y) * stiffness - vel.y * damping;
+
+          vel.x += ax * dt;
+          vel.y += ay * dt;
+
+          pos.x += vel.x * dt;
+          pos.y += vel.y * dt;
+        }
+
+        const targetRotZ = Math.max(-24, Math.min(24, vel.x * 0.032 + (pos.x - viewportW / 2) * 0.035));
+        const targetRotY = Math.max(-28, Math.min(28, vel.x * 0.042));
+        const targetRotX = Math.max(-22, Math.min(22, -vel.y * 0.032));
+
+        const rotStiff = 150;
+        const rotDamp = 14;
+
+        rotVel.z += ((targetRotZ - rot.z) * rotStiff - rotVel.z * rotDamp) * dt;
+        rotVel.y += ((targetRotY - rot.y) * rotStiff - rotVel.y * rotDamp) * dt;
+        rotVel.x += ((targetRotX - rot.x) * rotStiff - rotVel.x * rotDamp) * dt;
+
+        rot.z += rotVel.z * dt;
+        rot.y += rotVel.y * dt;
+        rot.x += rotVel.x * dt;
+      }
+
+      function getExactClampScreenPoint(drawX, drawY) {
+        const DEG2RAD = 0.017453292519943295;
+        const rx = rot.x * DEG2RAD;
+        const ry = rot.y * DEG2RAD;
+        const rz = rot.z * DEG2RAD;
+
+        const lx = 0;
+        const ly = -cardH * 0.5 + 6;
+        const lz = 0;
+
+        const cosX = Math.cos(rx), sinX = Math.sin(rx);
+        const y1 = ly * cosX - lz * sinX;
+        const z1 = ly * sinX + lz * cosX;
+
+        const cosY = Math.cos(ry), sinY = Math.sin(ry);
+        const x2 = lx * cosY + z1 * sinY;
+        const z2 = -lx * sinY + z1 * cosY;
+
+        const cosZ = Math.cos(rz), sinZ = Math.sin(rz);
+        const x3 = x2 * cosZ - y1 * sinZ;
+        const y3 = x2 * sinZ + y1 * cosZ;
+
+        const perspective = 1100;
+        const scale = perspective / (perspective - z2);
+
+        const centerX = drawX + cardW * 0.5;
+        const centerY = drawY + cardH * 0.5;
+
+        return {
+          x: centerX + x3 * scale,
+          y: centerY + y3 * scale
+        };
+      }
+
+      function animate(now) {
+        const frameDt = Math.min(0.05, (now - lastTime) / 1000);
+        lastTime = now;
+        accumulator += frameDt;
+
+        while (accumulator >= FIXED_DT) {
+          stepPhysics(FIXED_DT);
+          accumulator -= FIXED_DT;
+        }
+
+        const drawX = pos.x - cardW * 0.5;
+        const drawY = pos.y;
+
+        cardWrapper.style.transform = `translate3d(${drawX.toFixed(2)}px, ${drawY.toFixed(2)}px, 0) rotateZ(${rot.z.toFixed(2)}deg) rotateY(${rot.y.toFixed(2)}deg) rotateX(${rot.x.toFixed(2)}deg)`;
+
+        const shiftX = (rot.y * 1.4).toFixed(2);
+        const shiftY = (rot.x * 1.4).toFixed(2);
+        holoFoil.style.transform = `translate3d(${shiftX}px, ${shiftY}px, 0)`;
+        specularGlare.style.transform = `translate3d(${(-shiftX * 1.2).toFixed(2)}px, ${(-shiftY * 1.2).toFixed(2)}px, 0)`;
+
+        const attach = getExactClampScreenPoint(drawX, drawY);
+        const attachX = attach.x;
+        const attachY = attach.y;
+
+        const leftAnchorX = viewportW * 0.5 - 95;
+        const rightAnchorX = viewportW * 0.5 + 95;
+        const topAnchorY = -20;
+
+        const velLagX = vel.x * 0.022;
+        const midLeftX = ((leftAnchorX + attachX) * 0.5 - 14 + velLagX).toFixed(1);
+        const midLeftY = ((topAnchorY + attachY) * 0.5 + 22).toFixed(1);
+
+        const midRightX = ((rightAnchorX + attachX) * 0.5 + 14 + velLagX).toFixed(1);
+        const midRightY = ((topAnchorY + attachY) * 0.5 + 22).toFixed(1);
+
+        const axStr = attachX.toFixed(1);
+        const ayStr = attachY.toFixed(1);
+
+        const frontPath = `M ${leftAnchorX.toFixed(1)} ${topAnchorY} Q ${midLeftX} ${midLeftY}, ${axStr} ${ayStr}`;
+        const backPath = `M ${rightAnchorX.toFixed(1)} ${topAnchorY} Q ${midRightX} ${midRightY}, ${axStr} ${ayStr}`;
+
+        if (frontPath !== lastFrontPath) {
+          strapFrontOuter.setAttribute('d', frontPath);
+          strapFrontBase.setAttribute('d', frontPath);
+          lastFrontPath = frontPath;
+        }
+
+        if (backPath !== lastBackPath) {
+          strapBackOuter.setAttribute('d', backPath);
+          strapBackBase.setAttribute('d', backPath);
+          lastBackPath = backPath;
+        }
+
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+
+      const toastEl = document.getElementById('toast');
+      let toastTimer;
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+      }
+
+      document.getElementById('copy-email-btn').addEventListener('click', () => {
+        const email = document.getElementById('display-email').textContent;
+        navigator.clipboard?.writeText(email);
+        showToast(`คัดลอกอีเมล ${email} แล้ว`);
+      });
+
+      document.getElementById('copy-discord-btn').addEventListener('click', () => {
+        const discord = document.getElementById('display-discord').textContent;
+        navigator.clipboard?.writeText(discord);
+        showToast(`คัดลอก Discord ${discord} แล้ว`);
+      });
+
+      document.getElementById('copy-instagram-btn').addEventListener('click', () => {
+        const instagram = document.getElementById('display-instagram').textContent;
+        navigator.clipboard?.writeText(instagram);
+        showToast(`คัดลอก Instagram ${instagram} แล้ว`);
+      });
+
+    })();
+  </script>
+
+  <div class="cbfm-bar">
+    <button class="cbfm-btn" id="cbfmLoginBtn" type="button">เข้าสู่ระบบ Google</button>
+    <button class="cbfm-btn" id="cbfmLogoutBtn" type="button" hidden>ออกจากระบบ</button>
+    <button class="cbfm-btn primary cbfm-hidden" id="cbfmEditBtn" type="button">แก้ไขการ์ด</button>
+    <button class="cbfm-btn" id="cbfmShareBtn" type="button" hidden>คัดลอกลิงก์การ์ด</button>
+  </div>
+  <div class="cbfm-share cbfm-hidden" id="cbfmShareUrl"></div>
+  <div class="cbfm-notice cbfm-hidden" id="cbfmNotice"><div id="cbfmNoticeText"></div></div>
+
+  <div class="cbfm-modal cbfm-hidden" id="cbfmModal">
+    <form class="cbfm-form" id="cbfmForm" onsubmit="return false">
+      <label>ชื่อที่แสดง<input id="cbfmInName" maxlength="60"/></label>
+      <label>ลิงก์การ์ด (ตัวอักษรอังกฤษ ตัวเลข และ - เท่านั้น)<input id="cbfmInSlug" maxlength="40" placeholder="เช่น essencx"/></label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <label>Handle<input id="cbfmInHandle" maxlength="40"/></label>
+        <label>บทบาท<input id="cbfmInRole" maxlength="60"/></label>
+      </div>
+      <label>คำอธิบายสั้น<textarea id="cbfmInBio" rows="2" maxlength="240"></textarea></label>
+      <label>แท็ก (คั่นด้วยเครื่องหมายจุลภาค)<input id="cbfmInTags" maxlength="200"/></label>
+      <label>อีเมลติดต่อ<input id="cbfmInContact" maxlength="120"/></label>
+      <label>Discord<input id="cbfmInDiscord" maxlength="60"/></label>
+      <label>Instagram<input id="cbfmInInsta" maxlength="60"/></label>
+      <label class="check"><input type="checkbox" id="cbfmInPublic"/> เปิดให้ทุกคนดูการ์ดนี้ (ใช้แชร์ลิงก์ได้)</label>
+      <div class="cbfm-msg" id="cbfmMsg"></div>
+      <div class="row">
+        <button class="cbfm-btn" id="cbfmCancelBtn" type="button">ยกเลิก</button>
+        <button class="cbfm-btn primary" id="cbfmSaveBtn" type="button">บันทึก</button>
+      </div>
+    </form>
+  </div>
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyCLhvHij49dsfmmdKFOB4tYMxC1F4r7oxs",
+      authDomain: "fen-board.firebaseapp.com",
+      projectId: "fen-board",
+      appId: "1:1002777913125:web:9e32ce19faa76e3bf21ccc",
+    };
+    const SUPABASE_URL = "https://qxatfxjaemqumxhgqlgu.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_kFK1TySyqbOldG1X2FcijA_aFi9Udpk";
+
+    const fbAuth = getAuth(initializeApp(FIREBASE_CONFIG));
+    let user = null;
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
+      accessToken: async () => (user ? user.getIdToken() : null),
+    });
+
+    const $ = (id) => document.getElementById(id);
+    const params = new URLSearchParams(location.search);
+    let slug = (params.get("h") || "").toLowerCase();
+    let row = null;
+    let isOwner = false;
+    const SLUG_RE = /^[a-z0-9-]{3,40}$/;
+
+    function setText(sel, text) {
+      const el = document.querySelector(sel);
+      if (el) el.textContent = text;
+    }
+
+    function renderCard(d) {
+      setText(".profile-info h1", d.name || "-");
+      setText(".profile-handle", d.handle ? "@" + String(d.handle).replace(/^@/, "") : "");
+      setText(".profile-role", d.role || "");
+      setText(".bio-text", d.bio || "");
+      const tags = document.querySelector(".tags-row");
+      tags.replaceChildren();
+      (d.tags || []).forEach((t) => {
+        const span = document.createElement("span");
+        span.className = "tag";
+        span.textContent = t;
+        tags.appendChild(span);
+      });
+      $("display-email").textContent = d.contact_email || "ยังไม่ระบุ";
+      $("display-discord").textContent = d.discord || "ยังไม่ระบุ";
+      $("display-instagram").textContent = d.instagram || "ยังไม่ระบุ";
+      const img = document.querySelector(".avatar-img");
+      if (d.avatar_url) img.src = d.avatar_url;
+    }
+
+    function showNotice(text) {
+      $("cbfmNoticeText").textContent = text;
+      $("cbfmNotice").classList.remove("cbfm-hidden");
+    }
+    function hideNotice() {
+      $("cbfmNotice").classList.add("cbfm-hidden");
+    }
+
+    function shareUrl() {
+      return location.origin + location.pathname + "?h=" + encodeURIComponent(slug);
+    }
+
+    function updateShareUi() {
+      const share = $("cbfmShareUrl");
+      if (slug) {
+        share.textContent = shareUrl();
+        share.classList.remove("cbfm-hidden");
+        $("cbfmShareBtn").hidden = false;
+      } else {
+        share.classList.add("cbfm-hidden");
+        $("cbfmShareBtn").hidden = true;
+      }
+    }
+
+    async function loadBySlug() {
+      if (!slug) return null;
+      const { data } = await sb.from("member_cards").select("*").eq("slug", slug).maybeSingle();
+      return data || null;
+    }
+
+    async function loadOwnRow() {
+      if (!user || !user.email) return null;
+      const { data } = await sb.from("member_cards").select("*")
+        .eq("email", user.email.toLowerCase()).maybeSingle();
+      return data || null;
+    }
+
+    async function refresh() {
+      let data = await loadBySlug();
+      if (!data && !slug && user) {
+        // เจ้าของที่ยังไม่ได้ระบุลิงก์ ให้ดึงการ์ดของตัวเอง
+        data = await loadOwnRow();
+        if (data) {
+          slug = data.slug || "";
+          history.replaceState(null, "", location.pathname + (slug ? "?h=" + encodeURIComponent(slug) : ""));
+        }
+      }
+      isOwner = !!(user && user.email && data && data.email === user.email.toLowerCase());
+      if (!data) {
+        if (isOwner || (!slug && user)) {
+          // ยังไม่มีการ์ด ให้เจ้าของเปิดฟอร์มสร้างการ์ด
+          row = null;
+          hideNotice();
+          openEditor(true);
+        } else {
+          showNotice(slug ? "ไม่พบการ์ดนี้" : "ระบุลิงก์การ์ด หรือเข้าสู่ระบบเพื่อสร้างการ์ดของคุณ");
+        }
+      } else if (!data.is_public && !isOwner) {
+        showNotice("การ์ดนี้ยังไม่ได้เปิดให้ดูสาธารณะ");
+      } else {
+        row = data;
+        slug = data.slug || slug;
+        hideNotice();
+        renderCard(data);
+      }
+      $("cbfmEditBtn").classList.toggle("cbfm-hidden", !isOwner && !(user && !row));
+      $("cbfmLoginBtn").hidden = !!user;
+      $("cbfmLogoutBtn").hidden = !user;
+      updateShareUi();
+    }
+
+    function openEditor(isNew) {
+      const d = row || {
+        name: (user && user.displayName) || "",
+        slug: "",
+        handle: "",
+        role: "",
+        bio: "",
+        tags: [],
+        contact_email: (user && user.email) || "",
+        discord: "",
+        instagram: "",
+        is_public: false,
+      };
+      $("cbfmInName").value = d.name || "";
+      $("cbfmInSlug").value = d.slug || (user && user.email ? user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9-]/g, "") : "");
+      $("cbfmInHandle").value = d.handle || "";
+      $("cbfmInRole").value = d.role || "";
+      $("cbfmInBio").value = d.bio || "";
+      $("cbfmInTags").value = (d.tags || []).join(", ");
+      $("cbfmInContact").value = d.contact_email || "";
+      $("cbfmInDiscord").value = d.discord || "";
+      $("cbfmInInsta").value = d.instagram || "";
+      $("cbfmInPublic").checked = !!d.is_public;
+      $("cbfmMsg").textContent = isNew ? "สร้างการ์ดใหม่ เลือกลิงก์การ์ดแล้วกดบันทึก" : "";
+      $("cbfmModal").classList.remove("cbfm-hidden");
+    }
+
+    async function saveCard() {
+      if (!user || !user.email) return;
+      const name = $("cbfmInName").value.trim();
+      const newSlug = $("cbfmInSlug").value.trim().toLowerCase();
+      if (!name) return ($("cbfmMsg").textContent = "กรุณาใส่ชื่อที่แสดง");
+      if (!SLUG_RE.test(newSlug)) return ($("cbfmMsg").textContent = "ลิงก์การ์ดต้องมี 3-40 ตัว ใช้ a-z 0-9 และ - เท่านั้น");
+      const payload = {
+        email: user.email.toLowerCase(),
+        slug: newSlug,
+        name,
+        handle: $("cbfmInHandle").value.trim(),
+        role: $("cbfmInRole").value.trim(),
+        bio: $("cbfmInBio").value.trim(),
+        tags: $("cbfmInTags").value.split(",").map((x) => x.trim()).filter(Boolean).slice(0, 12),
+        contact_email: $("cbfmInContact").value.trim(),
+        discord: $("cbfmInDiscord").value.trim(),
+        instagram: $("cbfmInInsta").value.trim(),
+        is_public: $("cbfmInPublic").checked,
+        avatar_url: (row && row.avatar_url) || user.photoURL || null,
+        updated_at: new Date().toISOString(),
+      };
+      $("cbfmSaveBtn").disabled = true;
+      const { error } = await sb.from("member_cards").upsert(payload, { onConflict: "email" });
+      $("cbfmSaveBtn").disabled = false;
+      if (error) {
+        const dup = error.code === "23505";
+        $("cbfmMsg").textContent = dup ? "ลิงก์นี้มีคนใช้แล้ว กรุณาเลือกลิงก์อื่น" : "บันทึกไม่สำเร็จ: " + (error.message || "");
+        return;
+      }
+      slug = newSlug;
+      history.replaceState(null, "", location.pathname + "?h=" + encodeURIComponent(slug));
+      $("cbfmModal").classList.add("cbfm-hidden");
+      await refresh();
+    }
+
+    $("cbfmLoginBtn").addEventListener("click", async () => {
+      try {
+        await signInWithPopup(fbAuth, new GoogleAuthProvider());
+      } catch (err) {
+        alert("เข้าสู่ระบบไม่สำเร็จ: " + (err.code || err.message));
+      }
+    });
+    $("cbfmLogoutBtn").addEventListener("click", () => signOut(fbAuth));
+    $("cbfmEditBtn").addEventListener("click", () => openEditor(false));
+    $("cbfmCancelBtn").addEventListener("click", () => $("cbfmModal").classList.add("cbfm-hidden"));
+    $("cbfmSaveBtn").addEventListener("click", saveCard);
+    $("cbfmShareBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(shareUrl());
+        $("cbfmShareBtn").textContent = "คัดลอกแล้ว";
+        setTimeout(() => ($("cbfmShareBtn").textContent = "คัดลอกลิงก์การ์ด"), 1600);
+      } catch (err) {
+        alert(shareUrl());
+      }
+    });
+
+    onAuthStateChanged(fbAuth, (u) => {
+      user = u;
+      refresh();
+    });
+  </script>
+</body>
+</html>
