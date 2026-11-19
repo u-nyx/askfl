@@ -1,19 +1,12 @@
+import { SUPABASE_URL, SUPABASE_KEY, FIREBASE_CONFIG } from "./config.js";
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut as fbSignOut }
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 /* ===== ตั้งค่า ===== */
-const SUPABASE_URL = "https://qxatfxjaemqumxhgqlgu.supabase.co";
-const SUPABASE_KEY = "sb_publishable_kFK1TySyqbOldG1X2FcijA_aFi9Udpk";
 
 // ตั้งค่า Firebase (คัดลอกจาก Firebase Console → Project settings → Your apps)
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCLhvHij49dsfmmdKFOB4tYMxC1F4r7oxs",
-  authDomain: "fen-board.firebaseapp.com",
-  projectId: "fen-board",
-  appId: "1:1002777913125:web:9e32ce19faa76e3bf21ccc",
-};
 /* ================== */
 
 const BUCKET = "project-files";

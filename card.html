@@ -601,7 +601,7 @@
             <div class="avatar-wrap">
               <img
                 class="avatar-img"
-                src="pfuser.jpg"
+                src="data:image/gif;base64,R0lGODlhAQABAAAAACw="
                 alt="Profile Avatar"
               />
               <span class="verified-tick" title="Verified">
@@ -1028,19 +1028,12 @@
 
 
   <script type="module">
+    import { SUPABASE_URL, SUPABASE_KEY, FIREBASE_CONFIG } from "./config.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
       from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-    const FIREBASE_CONFIG = {
-      apiKey: "AIzaSyCLhvHij49dsfmmdKFOB4tYMxC1F4r7oxs",
-      authDomain: "fen-board.firebaseapp.com",
-      projectId: "fen-board",
-      appId: "1:1002777913125:web:9e32ce19faa76e3bf21ccc",
-    };
-    const SUPABASE_URL = "https://qxatfxjaemqumxhgqlgu.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_kFK1TySyqbOldG1X2FcijA_aFi9Udpk";
 
     const fbAuth = getAuth(initializeApp(FIREBASE_CONFIG));
     let user = null;
