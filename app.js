@@ -12,7 +12,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAut
 export const SUPABASE_URL = "https://qxatfxjaemqumxhgqlgu.supabase.co";
 export const SUPABASE_KEY = "sb_publishable_kFK1TySyqbOldG1X2FcijA_aFi9Udpk";
 
-const firebaseConfig = {
+const FIREBASE_CONFIG = {
     apiKey: "AIzaSyCLhvHij49dsfmmdKFOB4tYMxC1F4r7oxs",
     authDomain: "fen-board.firebaseapp.com",
     databaseURL: "https://fen-board-default-rtdb.asia-southeast1.firebasedatabase.app",
