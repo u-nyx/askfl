@@ -887,7 +887,8 @@
 #viewCard .cbfm-chip { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 8px; background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--text-primary); }
 
     /* ปุ่มและลิงก์ของหน้าการ์ด: อยู่กลางด้านล่างและกลางด้านบนของพื้นที่การ์ด */
-    #viewCard .cbfm-bar { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; gap: 8px; z-index: 60; }
+    #viewCard .cbfm-bar { position: absolute; top: auto; right: auto; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; flex-direction: row; gap: 8px; z-index: 60; width: max-content; white-space: nowrap; }
+    #viewCard .cbfm-btn { white-space: nowrap; width: auto; }
     #viewCard .cbfm-bar [hidden] { display: none !important; }
     #viewCard .cbfm-sh { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 60; max-width: 90vw; }
     #viewCard .cbfm-hidden { display: none !important; }
@@ -938,7 +939,7 @@
               <img
                 class="avatar-img"
                 src="data:image/gif;base64,R0lGODlhAQABAAAAACw="
-                alt="Profile Avatar"
+                alt=""
               />
               <span class="verified-tick" title="Verified">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1586,6 +1587,7 @@ const __rootRect = () => __root.getBoundingClientRect();
       }
     });
 
+    renderCard({ name: "", handle: "", role: "", bio: "", tags: [], contact_email: "", discord: "", instagram: "", avatar_url: null });
     onAuthStateChanged(fbAuth, (u) => {
       user = u;
       refresh();
