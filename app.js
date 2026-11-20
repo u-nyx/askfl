@@ -9,20 +9,6 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAut
 // ตั้งค่า Firebase (คัดลอกจาก Firebase Console → Project settings → Your apps)
 /* ================== */
 
-export const SUPABASE_URL = "https://qxatfxjaemqumxhgqlgu.supabase.co";
-export const SUPABASE_KEY = "sb_publishable_kFK1TySyqbOldG1X2FcijA_aFi9Udpk";
-
-const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyCLhvHij49dsfmmdKFOB4tYMxC1F4r7oxs",
-    authDomain: "fen-board.firebaseapp.com",
-    databaseURL: "https://fen-board-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "fen-board",
-    storageBucket: "fen-board.firebasestorage.app",
-    messagingSenderId: "1002777913125",
-    appId: "1:1002777913125:web:9e32ce19faa76e3bf21ccc",
-    measurementId: "G-EMY1BC93LD"
-  };
-
 const BUCKET = "project-files";
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 const DEFAULT_PROJECT_NAME = "ไฟล์ทั่วไป";
@@ -252,14 +238,22 @@ function hideLogin() {
 const withTimeout = (p, ms = 5000) =>
   Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
 
+// ข้อผิดพลาดล่าสุดจากการเชื่อมต่อ Supabase (ใช้แจ้งผู้ใช้ให้รู้สาเหตุจริง ไม่ใช่แค่ "ไม่มีสิทธิ์")
+let permError = "";
+
 async function refreshPermission() {
+  permError = "";
   if (!fbUser) {
     canDelete = false;
   } else {
     try {
       const { data, error } = await withTimeout(sb.rpc("is_allowed"));
+      if (error) permError = error.message || String(error.code || "rpc_error");
       canDelete = !error && data === true;
-    } catch {
+    } catch (err) {
+      permError = err && err.message === "timeout"
+        ? "เชื่อมต่อ Supabase ช้าหรือไม่ตอบสนอง"
+        : (err && err.message) || "เชื่อมต่อ Supabase ไม่ได้";
       canDelete = false;
     }
   }
@@ -352,10 +346,11 @@ const authListener = async (user) => {
   authReady = true;
   resolveAuth();
   if (!user && rejecting) {
+    const reason = typeof rejecting === "string" ? rejecting : "";
     rejecting = false;
     authReady = true;
     await refreshPermission();
-    return showLogin(t("no_access"));
+    return showLogin(reason || t("no_access"));
   }
   await refreshPermission();
   authReady = true;
@@ -364,6 +359,7 @@ const authListener = async (user) => {
     // ล็อกอินได้แต่อีเมลไม่อยู่ในรายการ: ออกจากระบบและแจ้งเตือน
     rejecting = true;
     pendingAction = null;
+    if (permError) rejecting = permError;  // แจ้งสาเหตุจริงที่หน้าจอล็อกอิน
     await fbSignOut(fbAuth);
     return;
   }
