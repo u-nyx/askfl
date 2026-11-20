@@ -885,6 +885,12 @@
 #viewCard .cbfm-msg { min-height: 16px; font-size: 12px; color: #f87171; }
 #viewCard .cbfm-share { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-secondary); max-width: 90vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #viewCard .cbfm-chip { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 8px; background: var(--tag-bg); border: 1px solid var(--tag-border); color: var(--text-primary); }
+
+    /* ปุ่มและลิงก์ของหน้าการ์ด: อยู่กลางด้านล่างและกลางด้านบนของพื้นที่การ์ด */
+    #viewCard .cbfm-bar { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; gap: 8px; z-index: 60; }
+    #viewCard .cbfm-bar [hidden] { display: none !important; }
+    #viewCard .cbfm-sh { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 60; max-width: 90vw; }
+    #viewCard .cbfm-hidden { display: none !important; }
 </style>
 <div id="cbfmRoot" class="relative w-full h-[calc(100vh-3.5rem)] min-h-[720px] overflow-hidden select-none touch-none" style="position:relative;width:100%;height:calc(100vh - 3.5rem);min-height:720px;overflow:hidden;">
 <!-- Lanyard SVG Straps -->
@@ -1128,6 +1134,17 @@ const __rootRect = () => __root.getBoundingClientRect();
           target.y = getRestTop();
         }
       };
+
+      // วางการ์ดที่จุดกลางใหม่ทุกครั้งที่พื้นที่เปลี่ยนขนาด (เช่น เปิดหน้า หรือย่อขยายหน้าจอ)
+      const __updateAll = () => {
+        updateMetrics();
+        if (viewportW > 0 && !isDragging) {
+          pos.x = target.x; pos.y = target.y; vel.x = 0; vel.y = 0;
+        }
+      };
+      if (typeof ResizeObserver !== 'undefined') new ResizeObserver(__updateAll).observe(__root);
+      window.addEventListener('resize', __updateAll, { passive: true });
+      __updateAll();
       window.addEventListener('resize', updateMetrics, { passive: true });
 
       function toggleFlip() {
@@ -1459,8 +1476,14 @@ const __rootRect = () => __root.getBoundingClientRect();
         if (isOwner || (!slug && user)) {
           // ยังไม่มีการ์ด ให้เจ้าของเปิดฟอร์มสร้างการ์ด
           row = null;
-          hideNotice();
-          openEditor(true);
+          showNotice("ยังไม่มีการ์ดของคุณ กดปุ่ม \"แก้ไขการ์ดของฉัน\" เพื่อสร้าง");
+          renderCard({
+            name: (user && (user.displayName || user.email)) || "",
+            handle: "", role: "", bio: "", tags: [],
+            contact_email: (user && user.email) || "",
+            discord: "", instagram: "",
+            avatar_url: (user && user.photoURL) || null,
+          });
         } else {
           showNotice(slug ? "ไม่พบการ์ดนี้" : "ระบุลิงก์การ์ด หรือเข้าสู่ระบบเพื่อสร้างการ์ดของคุณ");
         }
